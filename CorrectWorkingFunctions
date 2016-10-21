@@ -1,0 +1,80 @@
+   //работает корректно
+    //destFolder - "kjkv\svkls"
+    public static void unzip(String zipFile, String destFolder){
+        File file = new File(zipFile);
+        try {
+            ZipFile zip = new ZipFile(zipFile);
+            Enumeration entries = zip.entries();
+
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                System.out.println(entry.getName());
+
+                if (entry.isDirectory()) {
+                    new File(destFolder, entry.getName()).mkdirs();
+                } else {
+
+
+                    write(zip.getInputStream(entry),
+                            new BufferedOutputStream(new FileOutputStream(
+                                    new File(destFolder, entry.getName()))));
+
+                }
+            }
+
+            zip.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+//*/***********************************************************/*//
+
+    private static void directoryToZip(String sdirectory, String szipFile) throws IOException {
+        File directory = new File(sdirectory);
+        File zipFile = new File(szipFile);
+        URI base = directory.toURI();
+        Deque<File> queue = new LinkedList<File>();
+        queue.push(directory);
+        OutputStream out = new FileOutputStream(zipFile);
+        Closeable res = out;
+
+        try {
+            ZipOutputStream zout = new ZipOutputStream(out);
+            res = zout;
+            while (!queue.isEmpty()) {
+                directory = queue.pop();
+                for (File child : directory.listFiles()) {
+                    String name = base.relativize(child.toURI()).getPath();
+                    if (child.isDirectory()) {
+                        queue.push(child);
+                        name = name.endsWith("/") ? name : name + "/";
+                        zout.putNextEntry(new ZipEntry(name));
+                    } else {
+                        zout.putNextEntry(new ZipEntry(name));
+
+
+                        InputStream in = new FileInputStream(child);
+                        try {
+                            byte[] buffer = new byte[1024];
+                            while (true) {
+                                int readCount = in.read(buffer);
+                                if (readCount < 0) {
+                                    break;
+                                }
+                                zout.write(buffer, 0, readCount);
+                            }
+                        } finally {
+                            in.close();
+                        }
+                        zout.closeEntry();
+                    }
+                }
+            }
+        } finally {
+            res.close();
+        }
+    }

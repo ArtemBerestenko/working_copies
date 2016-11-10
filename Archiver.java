@@ -94,7 +94,7 @@ public class Archiver {
                 if (!zipEntries.get(i).isDirectory()){
                     is = z.getInputStream(zipEntries.get(i));//добавить проверку на .zip потому что это тоже файл
                     //BufferedReader br = new BufferedReader(new FileReader("foo.in"));
-                    FileRW.copyZipFile(is, "C:\\testfolder\\ffgssss.zip");
+                    //FileRW.copyZipFile(is, "C:\\testfolder\\ffgssss.zip");
                     //FileRW.StreamToFile(is, new File("C:\\testfolder\\ffgmss.txt"));
 
 

@@ -3,9 +3,7 @@
  */
 import java.io.*;
 import java.net.URI;
-import java.util.Deque;
-import java.util.Enumeration;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.zip.*;
 
 
@@ -278,51 +276,60 @@ public class UnzipUtil {
 
 
     public static void main(String[] args) {
-        /*
-        try {
-            directoryToZip("C:\\testfolder\\data\\A", "C:\\testfolder\\data\\data.zip");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        /*
-        if (args.length != 2){
-            System.out.println("Uncorrect number of parameters!");
-            return;
-        }
 
-        File file = new File(args[0]);
-        if(!file.exists()) {
-            System.out.println("Zip Archive" + args[0] + " doesn't exists!");
-        }
-        */
-
-        //unzip("C:\\testfolder\\file2.zip", "C:\\testfolder\\data\\MY_LOCATION");
-        /*
-        unzip("C:\\testfolder\\data\\inputs/--11--/S.zip", "C:\\testfolder\\data\\inputs/--11--/MY_LOCATION_FOR_ZIP_CONTENT");
-        try {
-            directoryToZip("C:\\testfolder\\data\\inputs/--11--/MY_LOCATION_FOR_ZIP_CONTENT", "C:\\testfolder\\data\\inputs/--11--/MY_ZIP.zip");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-
-
-        //FileRW.getFileName("nkbnn;m,/knojhno/");
-
-        //changeCodeNumbers
-        //System.out.println(Parser.changeCodeNumbers("+7 (101) 111-222-11  abc@ert.com, def@sdf.org"));
 
         unzip("C:\\testfolder\\inputs.zip", "C:\\testfolder\\data");
-        //GzipToFile("C:\\testfolder\\bb.bb.gz", "C:\\testfolder\\bhn.bb.txt");
-        //recursiveDelete("C:\\testfolder\\bb.bb.gz");
-        //compressGzipFile("C:\\testfolder\\bhn.bb.txt", "C:\\testfolder\\bb.bb.gz");
 
-        //work("C:\\testfolder\\file2.zip", "C:\\testfolder\\data");
-
-
+        try {
+            writeSetToFile(Parser.getEmails(), "C:\\testfolder\\data" + "/inputs/Emails.txt");
+            writeSetToFile(Parser.getNumbers(), "C:\\testfolder\\data" + "/inputs/Nubers.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            directoryToZip("C:\\testfolder\\data\\inputs", "C:\\testfolder\\data" + "/inputsv2.zip");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        recursiveDelete("C:\\testfolder\\data" + "/inputs");
 
 
     }
+
+    private static void writeSetToFile (Set set, String fileName) throws IOException {
+        //TreeSet numbers = (TreeSet) Parser.getNumbers();
+        File file = new File(fileName);
+
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BufferedWriter writer = new BufferedWriter(fw);
+
+        Iterator iter = set.iterator();
+        try {
+            while (iter.hasNext()) {
+
+                    writer.write(iter.next().toString() + (char)13 + (char)10);
+
+            }
+        }   finally {
+            try {
+                writer.close();
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+
+
 
     public static void recursiveDelete(String sfile) {
         System.out.println("");

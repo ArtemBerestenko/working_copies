@@ -309,6 +309,9 @@ public class UnzipUtil {
 
         //FileRW.getFileName("nkbnn;m,/knojhno/");
 
+        //changeCodeNumbers
+        //System.out.println(Parser.changeCodeNumbers("+7 (101) 111-222-11  abc@ert.com, def@sdf.org"));
+
         unzip("C:\\testfolder\\inputs.zip", "C:\\testfolder\\data");
         //GzipToFile("C:\\testfolder\\bb.bb.gz", "C:\\testfolder\\bhn.bb.txt");
         //recursiveDelete("C:\\testfolder\\bb.bb.gz");

@@ -10,6 +10,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileRW {
 
+    public static String[] pathSeparators = {"\\", "//"};
+
     //Can write from one file to another line by line
     public static void StreamToFile(InputStream is, File fileTo){
         try {
@@ -65,10 +67,12 @@ public class FileRW {
     public static String getFileName(String fileName){
         //String fileName = file.getName();
         Integer length = fileName.length() - 1;
-        if (fileName.charAt(length) == '\\'){
-            fileName = fileName.substring(0, length - 1);
+        char usedseparator = fileName.lastIndexOf('\\') > fileName.lastIndexOf('/')? '\\':'/';
+        if (fileName.charAt(length) == usedseparator){
+            fileName = fileName.substring(0, length);
         }
-        return fileName.substring(fileName.lastIndexOf("\\")+1, fileName.length());
+        usedseparator = fileName.lastIndexOf('\\') > fileName.lastIndexOf('/')? '\\':'/';
+        return fileName.substring(fileName.lastIndexOf(usedseparator)+1, fileName.length());
     }
 
 

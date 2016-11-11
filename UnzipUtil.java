@@ -12,6 +12,15 @@ import java.util.zip.*;
 public class UnzipUtil {
     //работает корректно
     //destFolder - "kjkv\svkls"
+    //if zip file contains folder A, then new way it works will be: "destFolder\A...":
+    //zipFile/
+    //        A/
+    //          ...
+    //result:
+    //destFolder/
+    //           A/
+    //             ...
+
     public static void unzip(String zipFile, String destFolder){
         System.out.println("");
         System.out.println("unzip parameters:");
@@ -26,6 +35,8 @@ public class UnzipUtil {
         ZipEntry entry;
         String sdirectory;
         String szipFile;
+        //test line
+        new File(destFolder).mkdirs();
         try {
             zip = new ZipFile(zipFile);
             entries = zip.entries();
@@ -43,25 +54,29 @@ public class UnzipUtil {
                         case "txt":
 
                             is = zip.getInputStream(entry);
-                            FileRW.StreamToFile(is, new File(destFolder + "\\" + FileRW.getFileName(entry.getName())));
+                            FileRW.StreamToFile(is, new File(destFolder + "\\" + entry.getName()));
                             is.close();
                             break;
 
                         case "gz":
                             write(zip.getInputStream(entry),
                                     new BufferedOutputStream(new FileOutputStream(
-                                            new File(destFolder, entry.getName()))));
-                            GzipToFile(destFolder + "\\" + FileRW.getFileName(entry.getName()), destFolder + "\\" + FileRW.getFileName(entry.getName()).replaceAll(".gz", ".txt"));
-                            recursiveDelete(destFolder + "\\" + FileRW.getFileName(entry.getName()));
-                            compressGzipFile(destFolder + "\\" + FileRW.getFileName(entry.getName()).replaceAll(".gz", ".txt"), destFolder + "\\" + FileRW.getFileName(entry.getName()));
-                            recursiveDelete(destFolder + "\\" + FileRW.getFileName(entry.getName()).replaceAll(".gz", ".txt"));
+                                            new File(destFolder + "/", entry.getName()))));
+                            GzipToFile(destFolder + "\\" + entry.getName(), destFolder + "\\" + entry.getName().replaceAll(".gz", ".txt"));
+                            recursiveDelete(destFolder + "\\" + entry.getName());
+                            compressGzipFile(destFolder + "\\" + entry.getName().replaceAll(".gz", ".txt"), destFolder + "\\" + entry.getName());
+                            recursiveDelete(destFolder + "\\" + entry.getName().replaceAll(".gz", ".txt"));
 
                             break;
                         case "zip":
+                            String returnStringEntityName = FileRW.deleteFileExtension(FileRW.getFileName(entry.getName()));
                             write(zip.getInputStream(entry),
                                     new BufferedOutputStream(new FileOutputStream(
-                                            new File(destFolder, entry.getName()))));
-                            unzip(destFolder + "\\" + entry.getName(), new File(destFolder + "\\" + entry.getName()).getParentFile().getAbsolutePath());
+                                            new File(destFolder + "/", entry.getName()))));
+                            unzip(destFolder + "\\" + entry.getName(), FileRW.deleteFileExtension(destFolder + "\\" + entry.getName()));
+                            //it is done to consider Intermediary folder
+                            //unzip(destFolder + "\\" + entry.getName(), FileRW.deleteFileExtension(new File(destFolder + "\\" + entry.getName()).getAbsolutePath()));
+
                             sdirectory = FileRW.deleteFileExtension(destFolder + "\\" + entry.getName());
                             szipFile = destFolder + "\\" + entry.getName();
                             recursiveDelete(destFolder + "\\" + entry.getName());
@@ -78,6 +93,7 @@ public class UnzipUtil {
                                     new File(destFolder, entry.getName()))));
                                     */
                     }
+
                 }
 
             }
@@ -98,6 +114,14 @@ public class UnzipUtil {
 
     }
 
+    /*
+    way it works:
+    sdirectory/
+               A/
+      szipfile/
+                A/
+
+     */
 
     private static void directoryToZip(String sdirectory, String szipFile) throws IOException {
         System.out.println("");
@@ -108,7 +132,9 @@ public class UnzipUtil {
         System.out.println("");
         File directory = new File(sdirectory);
         File zipFile = new File(szipFile);
+        // experiment to compress not only files, but file with directory, SUCCESSFUL
         URI base = directory.toURI();
+        //URI base = directory.getParentFile().toURI();
         Deque<File> queue = new LinkedList<File>();
         queue.push(directory);
         OutputStream out = new FileOutputStream(zipFile);
@@ -253,6 +279,12 @@ public class UnzipUtil {
 
     public static void main(String[] args) {
         /*
+        try {
+            directoryToZip("C:\\testfolder\\data\\A", "C:\\testfolder\\data\\data.zip");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*
         if (args.length != 2){
             System.out.println("Uncorrect number of parameters!");
             return;
@@ -264,9 +296,20 @@ public class UnzipUtil {
         }
         */
 
-        unzip("C:\\testfolder\\file2.zip", "C:\\testfolder\\data");
+        //unzip("C:\\testfolder\\file2.zip", "C:\\testfolder\\data\\MY_LOCATION");
+        /*
+        unzip("C:\\testfolder\\data\\inputs/--11--/S.zip", "C:\\testfolder\\data\\inputs/--11--/MY_LOCATION_FOR_ZIP_CONTENT");
+        try {
+            directoryToZip("C:\\testfolder\\data\\inputs/--11--/MY_LOCATION_FOR_ZIP_CONTENT", "C:\\testfolder\\data\\inputs/--11--/MY_ZIP.zip");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
 
-        //unzip("C:\\testfolder\\inputs.zip", "C:\\testfolder\\data");
+
+        //FileRW.getFileName("nkbnn;m,/knojhno/");
+
+        unzip("C:\\testfolder\\inputs.zip", "C:\\testfolder\\data");
         //GzipToFile("C:\\testfolder\\bb.bb.gz", "C:\\testfolder\\bhn.bb.txt");
         //recursiveDelete("C:\\testfolder\\bb.bb.gz");
         //compressGzipFile("C:\\testfolder\\bhn.bb.txt", "C:\\testfolder\\bb.bb.gz");

@@ -45,19 +45,32 @@ public class Parser {
 
     public static void readEmails(String line){
         String buffer = "";
-        String[] email = null;
+        String email = null;
+        line = line.replaceAll("\\t|;|,", " ");
+        String[] stringsLimitedBySpaces = line.split(" ");
+        for (String str : stringsLimitedBySpaces){
+            if (str.contains("@")){
+                //email = str.replaceAll(";|,", "");
+                    Emails.add(str.trim());
+                }
+            }
+
+        }
+        /*
+
         if (line.contains("@")){
             /*
             buffer = line.replaceAll("[^\\t|;|,]", " ");
             email = buffer.split(" ");
-            */
+
             email = line.replaceAll("[^@ \\w]|\\d|_", " ").trim().split(" ");
             for (String str : email){
                 Emails.add(str);
             }
         }
+        */
 
-    }
+
 
 
 
